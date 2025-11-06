@@ -1,0 +1,12 @@
+FROM theatre_common AS auth_api_alembic_async_base
+
+RUN mkdir -p requirements/auth_api_alembic_async
+
+COPY auth_api/src/alembic_async/requirements.txt \
+    requirements/auth_api_alembic_async/requirements.txt   
+
+RUN pip install --upgrade --no-cache-dir \
+    -r requirements/auth_api_alembic_async/requirements.txt \
+    --target site-packages
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

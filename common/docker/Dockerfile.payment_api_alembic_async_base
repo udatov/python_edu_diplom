@@ -1,0 +1,12 @@
+FROM theatre_common AS payment_api_alembic_async_base
+
+RUN mkdir -p requirements/billing/payment_api_alembic_async
+
+COPY billing/payment_api/src/alembic_async/requirements.txt \
+    requirements/billing/payment_api_alembic_async/requirements.txt   
+
+RUN pip install --upgrade --no-cache-dir \
+    -r requirements/billing/payment_api_alembic_async/requirements.txt \
+    --target site-packages
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

@@ -1,0 +1,74 @@
+include:
+  - path:
+      - ./docker-compose/db.yml
+      - ./docker-compose/nginx.yml
+      - ./docker-compose/redis.yml
+      - ./docker-compose/rabbitmq.yml
+      - ./docker-compose/mongo.yml
+      - ./docker-compose/threatre_base.yml
+      - ./docker-compose/auth_service.yml
+      - ./docker-compose/notification.yml
+services:
+  payment_api_alembic:
+    container_name: payment_api_alembic
+    profiles: ["require__payment_api_alembic"]
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: ./billing/payment_api/src/alembic_async/Dockerfile
+    image: payment_api_alembic
+    env_file:
+      - ${ENV_FILE}
+    volumes:
+      - ./billing/payment_api/src/alembic_async/versions:/opt/app/billing/payment_api/src/alembic_async/versions
+
+  payment_service:
+    container_name: payment_service
+    profiles: ["require__payment_service"]
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+      auth_service:
+        condition: service_started
+      payment_api_alembic:
+        condition: service_completed_successfully
+
+    build:
+      context: .
+      dockerfile: ./billing/payment_api/Dockerfile
+    image: payment_service
+    restart: always
+    env_file:
+      - .example.env
+    ports:
+      - 8007:8007
+    volumes:
+      - ./logs/payment_api:/opt/app/logs/payment_api
+
+  gui_service:
+    container_name: gui_service
+    profiles: ["require__gui_service"]
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+      auth_service:
+        condition: service_started
+      payment_service:
+        condition: service_started
+
+    build:
+      context: .
+      dockerfile: ./gui/Dockerfile
+    image: gui_service
+    restart: always
+    env_file:
+      - .example.env
+    ports:
+      - 8008:8008
+    volumes:
+      - ./logs/gui:/opt/app/logs/gui

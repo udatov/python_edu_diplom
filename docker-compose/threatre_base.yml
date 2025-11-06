@@ -1,0 +1,58 @@
+services:
+  theatre_common:
+    profiles: ["require__theatre_common"]
+    image: theatre_common
+    build:
+      context: ..
+      dockerfile: ./common/docker/Dockerfile.theatre_common
+    command: /bin/bash -c exit
+
+  auth_api_base:
+    profiles: ["require__auth_api_base"]
+    image: auth_api_base
+    depends_on:
+      - theatre_common
+    build:
+      context: ..
+      dockerfile: ./common/docker/Dockerfile.auth_api_base
+    command: /bin/bash -c exit
+
+  auth_api_alembic_async_base:
+    profiles: ["require__auth_api_alembic_async_base"]
+    image: auth_api_alembic_async_base
+    depends_on:
+      - theatre_common
+    build:
+      context: ..
+      dockerfile: ./common/docker/Dockerfile.auth_api_alembic_async_base
+    command: /bin/bash -c exit
+
+  payment_api_base:
+    profiles: ["require__payment_api_base"]
+    image: payment_api_base
+    depends_on:
+      - theatre_common
+    build:
+      context: ..
+      dockerfile: ./common/docker/Dockerfile.payment_api_base
+    command: /bin/bash -c exit    
+
+  payment_api_alembic_async_base:
+    profiles: ["require__payment_api_alembic_async_base"]
+    image: payment_api_alembic_async_base
+    depends_on:
+      - theatre_common
+    build:
+      context: ..
+      dockerfile: ./common/docker/Dockerfile.payment_api_alembic_async_base
+    command: /bin/bash -c exit
+
+  gui_base:
+    profiles: ["require__gui_base"]
+    image: gui_base
+    depends_on:
+      - theatre_common
+    build:
+      context: ..
+      dockerfile: ./common/docker/Dockerfile.gui_base
+    command: /bin/bash -c exit    

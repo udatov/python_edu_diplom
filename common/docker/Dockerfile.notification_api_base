@@ -1,0 +1,11 @@
+FROM theatre_common AS notification_api_base
+
+RUN mkdir -p requirements/notification/notification-api logs/notification/notification_api
+COPY notification/notification-api/requirements.txt \
+    requirements/notification/notification-api/requirements.txt
+
+RUN pip install --upgrade --no-cache-dir \
+    -r requirements/notification/notification-api/requirements.txt \
+    --target site-packages
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

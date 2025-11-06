@@ -1,0 +1,42 @@
+[project]
+name = "ugc-sprint-001_2"
+version = "0.1.0"
+description = "00LessBottesLiberte6"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pre-commit==4.2.0", 
+    "black==25.1.0", 
+    "ruff==0.11.8", 
+    "mypy==1.15.0", 
+    "lxml==5.4.0"
+]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff]
+line-length = 120
+
+[tool.uv.sources]
+movies_api = { workspace = true }
+etl = { workspace = true }
+
+[tool.uv.workspace]
+members = ["etl", "movies_api", "auth_api", "tests/functional", "common"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.1",
+    "uv>=0.5.18",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    'ignore::DeprecationWarning',
+]
+
+pythonpath = [
+    'movies_api/src',
+    'auth_api/src'
+]

@@ -1,0 +1,18 @@
+services:
+  db:
+    ports:
+      - 5432:5432
+      
+  redis:
+    ports:
+      - 6379:6379  
+      
+  # RabbitMQ
+  rabbitmq_management-001:
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  mongo:
+    ports:
+      - 27017:27017

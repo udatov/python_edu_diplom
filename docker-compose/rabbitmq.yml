@@ -1,0 +1,13 @@
+services:
+  rabbitmq_management-001:
+    profiles: ["require__rabbitmq"]
+    container_name: rabbitmq_management-001
+    image: rabbitmq:3-management
+    env_file: 
+      - ${ENV_FILE}
+    restart: always
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3

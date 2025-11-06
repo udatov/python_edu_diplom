@@ -1,0 +1,11 @@
+FROM theatre_common AS payment_api_base
+
+RUN mkdir -p requirements/billing/payment_api logs/payment_api
+COPY billing/payment_api/requirements.txt \
+    requirements/billing/payment_api/requirements.txt
+
+RUN pip install --upgrade --no-cache-dir \
+    -r requirements/billing/payment_api/requirements.txt \
+    --target site-packages
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

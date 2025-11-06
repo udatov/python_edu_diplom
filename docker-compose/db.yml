@@ -1,0 +1,23 @@
+volumes:
+  pg_data:
+
+services:
+  db:
+    image: postgres:17
+    container_name: db
+    volumes:
+      - type: bind
+        source: ../db/docker-entrypoint-initdb.d/init-db.sh
+        target: /docker-entrypoint-initdb.d/init-db.sh
+      - type: volume
+        source: pg_data
+        target: /var/lib/postgresql/data
+    env_file: 
+      - ${ENV_FILE}
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s

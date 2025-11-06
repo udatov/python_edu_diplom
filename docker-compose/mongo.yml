@@ -1,0 +1,19 @@
+volumes:
+  mongo_data:
+
+services:
+  mongo:
+    profiles: ["require__mongo"]
+    image: mongo:latest
+    container_name: mongo
+    volumes:
+      - mongo_data:/data/db
+    env_file:
+      - ${ENV_FILE}
+    restart: unless-stopped
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet localhost:27017/admin || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s

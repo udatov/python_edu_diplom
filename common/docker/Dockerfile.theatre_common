@@ -1,0 +1,35 @@
+FROM python:3.13 AS theatre_common
+
+ENV APP_HOME=/opt/app \
+    APP_USER=user
+
+WORKDIR $APP_HOME
+
+RUN mkdir site-packages && mkdir -p requirements/common logs
+
+COPY common/requirements.txt \
+    requirements/common/requirements.txt
+
+RUN python3 -m pip install --no-cache-dir --upgrade pip --target site-packages && \
+    pip install --upgrade --no-cache-dir \
+    -r requirements/common/requirements.txt \
+    --target site-packages
+
+RUN apt-get update -y && apt-get install -y postgresql-client vim dumb-init \
+    && apt-get clean autoclean \
+    && apt-get autoremove --yes \
+    && rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+RUN groupadd -r -g 1000 $APP_USER \
+    && useradd -r -m -d $APP_HOME -u 1000 -g $APP_USER $APP_USER \
+    && chown $APP_USER:$APP_USER $APP_HOME && chown -Rf $APP_USER:$APP_USER $APP_HOME    
+
+COPY common/src ./common/src
+
+USER user
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH="/opt/app/:/opt/app/site-packages" \
+    PATH="${PATH}:/opt/app/site-packages/bin"
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

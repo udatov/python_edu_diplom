@@ -1,0 +1,37 @@
+services:
+  auth_api_alembic:
+    container_name: auth_api_alembic
+    profiles: ["require__auth_api_alembic"]
+    depends_on:
+      - db
+    build:
+      context: ..
+      dockerfile: ./auth_api/src/alembic_async/Dockerfile
+    image: auth_api_alembic
+    env_file:
+      - ${ENV_FILE}
+    volumes:
+      - ../auth_api/src/alembic_async/versions:/opt/app/auth_api/src/alembic_async/versions
+
+  auth_service:
+    container_name: auth_service
+    profiles: ["require__auth_service"]
+    depends_on:
+      db:
+        condition: service_started
+      redis:
+        condition: service_started
+      auth_api_alembic:
+        condition: service_completed_successfully
+    
+    build:
+      context: ..
+      dockerfile: ./auth_api/Dockerfile
+    image: auth_service
+    restart: always
+    env_file:
+      - ${ENV_FILE}
+    ports:
+      - 8000:8000
+    volumes:
+      - ../logs/auth_api:/opt/app/logs/auth_api
